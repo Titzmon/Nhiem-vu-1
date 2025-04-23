@@ -35,45 +35,54 @@ void MoveForward(int speed, int distance) {
     LbMotion.stopAndWait();
 }
 
-void FollowLine(int speed) {
-    int speed_0 = 0;
-    int speed_2 = 0.4 * speed;
-    int speed_3 = 0.6 * speed;
-    byte line = LbIRLine.read(threshold);
-    LbIRLine.println(line);
+void FollowLine ( int speed  )
+{
+  // div level speed 
+  int speed_0 = 0  ;
+  //int speed_1 = 0.2 * speed ;
+  int speed_2 = 0.4 * speed ;
+  int speed_3 = 0.6 * speed ;
+  //int speed_4 = 0.8 * speed ;
 
-    static int lostLineCount = 0;
-    
-    if (line == 0b0000) { 
-        lostLineCount++;
-        if (lostLineCount < 10) {  
-            LbMotion.runLR(speed, speed);
-        } else {  
-            if (Leanbot.pingMm() > 100) { 
-                LbMotion.runLR(speed, speed); 
-            } else {  
-                LbMotion.runLR(speed_0, speed_0);
-            }
-        }
-    } else if (line == 0b1111) { 
-        lostLineCount++;
-        if (lostLineCount < 5) { 
-            LbMotion.runLR(speed, speed); 
-        } else { 
-            LbMotion.runLR(speed_0, speed_0); 
-        }
-    } else {  
-        lostLineCount = 0; 
-        switch (line) {
-            case 0b0110: LbMotion.runLR(speed, speed); break;
-            case 0b0010: LbMotion.runLR(speed, speed_3); break;
-            case 0b0011: LbMotion.runLR(speed, speed_2); break;
-            case 0b0001: LbMotion.runLR(speed, speed_0); break;
-            case 0b0100: LbMotion.runLR(speed_3, speed); break;
-            case 0b1100: LbMotion.runLR(speed_2, speed); break;
-            case 0b1000: LbMotion.runLR(speed_0, speed); break;
-        }
-    }
+  byte line = LbIRLine.read(threshold);                   // Read the value of 4 bar sensors with a threshold of 50
+  LbIRLine.println(line);                                 // transfer the results to the computer
+
+  switch (line) {                                         // check the location of Leanbot
+    case 0b0000:
+    case 0b0110:
+      LbMotion.runLR(speed, speed);
+      break;
+
+
+    case 0b0010:
+      LbMotion.runLR(speed, speed_3);
+      break;
+
+    case 0b0011:
+      LbMotion.runLR(speed, speed_2);
+      break;
+
+    case 0b0001:
+      LbMotion.runLR(speed, speed_0);
+      break;
+
+    case 0b0100:
+      LbMotion.runLR(speed_3, speed);
+      break;
+
+    case 0b1100:
+      LbMotion.runLR(speed_2, speed);
+      break;
+
+    case 0b1000:
+      LbMotion.runLR(speed_0, speed);
+      break;
+
+
+    case 0b1111:
+      LbMotion.runLR(speed_0, speed_0);
+      break;
+  }
 }
 
 bool CheckEmptySlot() {
